@@ -1,3 +1,10 @@
+// Globals
+let playerScore = 0;
+let computerScore = 0;
+let draws = 0;
+let winAmount = 3;
+
+
 // Randomly selects and returns "Rock" "Paper" or "Scissors"
 function getComputerChoice() {
     let choices = ["Rock", "Paper", "Scissors"];
@@ -32,9 +39,16 @@ function playRound(playerSelection, computerSelection) {
     return result;
 }
 
+// Capitalizes the first letter of a string
+function capitalizeFirst(string) {
+    return string.slice(0, 1).toUpperCase() + string.slice(1).toLowerCase();
+}
+
 // Returns a string indicating the result of the round
 function getResultString(playerSelection, computerSelection, result) {
     let s = "";
+    playerSelection = capitalizeFirst(playerSelection);
+    computerSelection = capitalizeFirst(computerSelection);
 
     switch (result) {
         case 1:
@@ -53,38 +67,6 @@ function getResultString(playerSelection, computerSelection, result) {
     return s;
 }
 
-// Plays a five round game, keeping score of the winner of each round and
-// reports the overall winner/loser at the end
-function game() {
-    let numGames = 5;
-
-    let playerScore = 0;
-    let computerScore = 0;
-    let draws = 0;
-
-    for (let i = 0; i < numGames; i++) {
-        let playerSelection = "";
-        while (!checkPlayerSelection(playerSelection)) {    // wait for a valid selection
-            playerSelection = prompt("Select Rock, Paper, or Scissors")
-        }
-        let computerSelection = getComputerChoice();
-
-        let result = playRound(playerSelection, computerSelection);
-        console.log(getResultString(playerSelection, computerSelection, result));
-
-        if (result > 0) playerScore++;
-        else if (result < 0) computerScore++;
-        else draws++;
-    }
-
-    console.log(`Final score after ${numGames} rounds:`);
-    console.log(`Player: ${playerScore}, Computer: ${computerScore}, Draw: ${draws}`);
-
-    if (playerScore === computerScore) console.log("Draw!");
-    else if (playerScore > computerScore) console.log("You win!");
-    else console.log("The Computer wins!");
-}
-
 // Checks validity of the player's entry
 function checkPlayerSelection(playerSelection) {
     let ps = playerSelection.toLowerCase();
@@ -92,4 +74,68 @@ function checkPlayerSelection(playerSelection) {
     return (ps === "rock" || ps === "scissors" || ps === "paper");
 }
 
-game();
+// Display the result string 
+function showResult(string) {
+    const divResult = document.querySelector(".results");
+    divResult.textContent = string;
+}
+
+// Display the current score
+function showScore() {
+    const divScore = document.querySelector(".score");
+
+    divScore.textContent = `You: ${playerScore}, Computer: ${computerScore}`;
+}
+
+// Reset the score counter and text fields
+function reset() {
+    playerScore = 0;
+    computerScore = 0;
+
+    showScore();
+
+    const divIntro = document.querySelector(".intro");
+    divIntro.textContent = `First to ${winAmount} wins!`;
+
+    const divResult = document.querySelector(".results");
+    divResult.textContent = "";
+}
+
+// Check if either player or computer have won
+function checkWin() {
+    if (playerScore >= winAmount) {
+        alert("You win!");
+        reset();
+    }
+    if (computerScore >= winAmount) {
+        alert("You lose!");
+        reset();
+    }
+}
+
+// Respond to button events
+function buttonEvent(e) {
+    let playerSelection = e.target.getAttribute("id");
+    if (!checkPlayerSelection(playerSelection)) {
+        console.log(`${playerSelection} not recognized`);
+        return;
+    }
+
+    let computerSelection = getComputerChoice();
+    let result = playRound(playerSelection, computerSelection);
+    let string = getResultString(playerSelection, computerSelection, result);
+
+    showResult(string);
+
+    if (result > 0) playerScore++;
+    else if (result < 0) computerScore++;
+    else draws++;
+
+    showScore();
+    checkWin();
+}
+
+const buttons = document.querySelectorAll("button");
+buttons.forEach(button => button.addEventListener("click", buttonEvent));
+
+reset();
