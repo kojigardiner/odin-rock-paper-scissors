@@ -2,7 +2,7 @@
 let playerScore = 0;
 let computerScore = 0;
 let draws = 0;
-let winAmount = 3;
+let winAmount = 5;
 
 
 // Randomly selects and returns "Rock" "Paper" or "Scissors"
